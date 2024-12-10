@@ -103,7 +103,7 @@ runs:
         # set IFS (internal file separator) to \n to avoid JSON space being an arguments separator
         IFS=$'\n'
         
-        neonctl branches create \
+        npx neonctl branches create --yes\
           --project-id ${{ inputs.project_id }} \
           --name "${{ inputs.branch_name }}" \
           --suspend-timeout ${{ inputs.suspend_timeout }} \
@@ -123,17 +123,17 @@ runs:
         if [[ $(cat branch_err) == *"already exists"* ]]; then
 
           # Get the branch id by its name. We list all branches and filter by name
-          branch_id=$(neonctl branches list --project-id ${{ inputs.project_id }} -o json \
+          branch_id=$(npx neonctl branches list --yes --project-id ${{ inputs.project_id }} -o json \
               | jq -r '.[] | select(.name == "${{ inputs.branch_name }}") | .id')
 
           echo "branch exists, branch id: ${branch_id}"
 
           echo "branch_id=${branch_id}" >> $GITHUB_OUTPUT
-          NEON_CS=$(neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --prisma ${{ inputs.prisma }} --extended -o json)
+          NEON_CS=$(npx neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --prisma ${{ inputs.prisma }} --extended -o json)
           DB_URL=$(echo $NEON_CS | jq -r '.connection_string')
           DB_HOST=$(echo $NEON_CS | jq -r '.host')
           DB_PASSWORD=$(echo $NEON_CS | jq -r '.password')
-          NEON_CS_POOLER=$(neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --pooled --prisma ${{ inputs.prisma }} --extended -o json)
+          NEON_CS_POOLER=$(npx neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --pooled --prisma ${{ inputs.prisma }} --extended -o json)
           DB_URL_WITH_POOLER=$(echo $NEON_CS_POOLER | jq -r '.connection_string')
           DB_HOST_WITH_POOLER=$(echo $NEON_CS_POOLER | jq -r '.host')
         elif [[ $(cat branch_err) == *"ERROR:"* ]]; then
@@ -150,11 +150,11 @@ runs:
           echo "branch doesn't exist, branch id: ${branch_id}"
 
           echo "branch_id=${branch_id}" >> $GITHUB_OUTPUT
-          NEON_CS=$(neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --prisma ${{ inputs.prisma }} --extended -o json)
+          NEON_CS=$(npx neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --prisma ${{ inputs.prisma }} --extended -o json)
           DB_URL=$(echo $NEON_CS | jq -r '.connection_string')
           DB_HOST=$(echo $NEON_CS | jq -r '.host')
           DB_PASSWORD=$(echo $NEON_CS | jq -r '.password')
-          NEON_CS_POOLER=$(neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --pooled --prisma ${{ inputs.prisma }} --extended -o json)
+          NEON_CS_POOLER=$(npx neonctl cs ${branch_id} --project-id ${{ inputs.project_id }} --role-name ${{ inputs.username }} --database-name ${{ inputs.database }} --ssl ${{ inputs.ssl }} --pooled --prisma ${{ inputs.prisma }} --extended -o json)
           DB_URL_WITH_POOLER=$(echo $NEON_CS_POOLER | jq -r '.connection_string')
           DB_HOST_WITH_POOLER=$(echo $NEON_CS_POOLER | jq -r '.host')
         fi
