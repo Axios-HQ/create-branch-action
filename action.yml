@@ -63,8 +63,11 @@ runs:
   using: 'composite'
   steps:
     - uses: actions/setup-node@v4
-    - run: brew install neonctl
-      shell: bash
+    - run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        brew install neonctl
+
     - name: Create new Neon branch
       env:
         NEON_API_KEY: ${{ inputs.api_key }}
