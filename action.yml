@@ -106,7 +106,7 @@ runs:
         
         # set IFS (internal file separator) to \n to avoid JSON space being an arguments separator
         IFS=$'\n'
-        
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         neonctl branches create \
           --project-id ${{ inputs.project_id }} \
           --name "${{ inputs.branch_name }}" \
